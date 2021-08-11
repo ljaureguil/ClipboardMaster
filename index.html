@@ -46,16 +46,14 @@
         text-align: right;
         padding:15px;
  
-        width: 40%;
-        left: 30%;
+        width: 80%;
+        left: 10%;
    
         border-style: solid;
         background-color: rgb(154, 209, 180);
         display: none;
     }
-    .cin{
-        text-align: right;     
-    }
+  
     #de{
         height: auto;
 
@@ -65,14 +63,36 @@
         width: 100%;
     }
     .cin{
+        width: 98%;
+          text-align: right; 
         font-size: 18px;
         background-color: rgb(10, 248, 224);
         font-weight: bold;
+    }
+    #qi{
+        position: relative;
+        top:1%;
+        left:1%;
+        color:white;
+        background-color: red;;
+        border-radius: 100px;
+        opacity: .75;
+        font-weight: bold;
+        padding:15px;
+        width:8vw;
+    height:8vw; /* same as width */
+
+
+    }
+    #qt{
+  
+       width: 50%;
     }
 </style>
 <div id="todo">
 
     <div id="dor"> 
+        <span id="qi"></span> . . . 
         Qty: <input id="qt" type="number" class="cin"><br><br>
      Job No. <input id="jn" type="text" class="cin"><br><br>
 
@@ -86,7 +106,7 @@
      <button onclick="dor.style.display='none'">Close</button>
        
  </div>
-
+<br><br>
 <div id="reader"></div>
 <br>
 
@@ -104,7 +124,8 @@
 */</script>
 
 <script>
-
+    qi.style.width=qi.offsetHeight+"px";
+    alert(qi.style.width+"\n\n"+qi.style.height)
      var linkp = 'https://jsonblob.com/api/d0317ef4-f48e-11eb-9b1d-755fd0c1d5cb';
      var linkc = 'https://jsonblob.com/api/0da2d184-f931-11eb-a6a9-8d2736c2c513'
       var mecanico=""
@@ -157,6 +178,12 @@
              pno.value=r.pn
              de.value=r.des;
              me.value=mecanico;
+             qi.innerHTML=r.qty;
+
+          //   qi.style.width=qi.offsetHeight+"px";
+          //   qi.style.height=qi.style.width;
+   // alert(qi.style.width+"...\n\n..."+qi.style.height)
+
               }
              else{
                tx.style.display="block";
@@ -221,7 +248,7 @@ function getPart(pn,callback){
 function send(move){
    GetJ(linkc,function(obj){
     var o={}; 
-    o.qty=qt.value;
+    o.qty=qt.value*1;
     o.jobNo=jn.value;
     o.partN=pno.value;
     o.desc=de.value;
