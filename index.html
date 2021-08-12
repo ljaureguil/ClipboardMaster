@@ -25,6 +25,8 @@
         color: white;
     }
     #reader {
+        display:none;
+
         width: 100%;
         color: white;
         font-size: 25px;
@@ -70,7 +72,7 @@
         font-weight: bold;
     }
     #qi{
-        position: relative;
+        position: absolute;
         top:1%;
         left:1%;
         color:white;
@@ -79,8 +81,8 @@
         opacity: .75;
         font-weight: bold;
         padding:15px;
-        width:8vw;
-    height:8vw; /* same as width */
+    //    width:8vw;
+   // height:8vw; /* same as width */
 
 
     }
@@ -88,11 +90,21 @@
   
        width: 50%;
     }
+    #tcl{
+        width: 80%;
+        height:35%;
+    }
 </style>
 <div id="todo">
+    <div id="dclip">
+        <button id="bc" onclick="readClipb(true)">Read Clipboard/header</button>
+        <button id="bc" onclick="readClipb(false)">Read Clipboard</button><br><br>
+
+        <textarea id="tcl"></textarea>
+    </div>
 
     <div id="dor"> 
-        <span id="qi"></span> . . . 
+        <button id="qi" onclick="alert('This is what Inventory has '+this.innerHTML+' Pcs.')"></button> . . . 
         Qty: <input id="qt" type="number" class="cin"><br><br>
      Job No. <input id="jn" type="text" class="cin"><br><br>
 
@@ -124,10 +136,64 @@
 */</script>
 
 <script>
-    qi.style.width=qi.offsetHeight+"px";
-    alert(qi.style.width+"\n\n"+qi.style.height)
+  //  qi.style.width=qi.offsetHeight+"px";
+ //   alert(qi.style.width+"\n\n"+qi.style.height)
      var linkp = 'https://jsonblob.com/api/d0317ef4-f48e-11eb-9b1d-755fd0c1d5cb';
      var linkc = 'https://jsonblob.com/api/0da2d184-f931-11eb-a6a9-8d2736c2c513'
+
+function readClipb(op){
+    GetJ(linkc,function(obj){
+//          alert(JSON.stringify(obj.pulls[2]))
+          var s="";
+          var h='Qty'+ String.fromCharCode(9) +'Job'+ String.fromCharCode(9) +'Part No.'+ String.fromCharCode(9) +'Desc'+ String.fromCharCode(9) +'Mech'+ String.fromCharCode(9) +'Ret'+ String.fromCharCode(9) +'Date\n'
+         
+           a=obj.pulls;
+          for(var i=0;i<a.length;i++){
+              var b=a[i];
+              var fe=b.created.split("GMT")[0];
+              var pu="";
+              if(b.move==="return") pu="X";
+           
+            
+         s+=b.qty+ String.fromCharCode(9) +b.jobNo+ String.fromCharCode(9) +b.partN+ String.fromCharCode(9) +b.desc+ String.fromCharCode(9) +b.mechanic+ String.fromCharCode(9) +pu+ String.fromCharCode(9) +fe+"\n";
+
+          }
+          if(op) tcl.value=h+s;
+          else tcl.value=s;
+/////////////////////////////
+
+            var t = document.createElement("textarea");
+            document.body.appendChild(t);
+
+            t.innerHTML = tcl.value;
+            t.select();
+            document.execCommand("copy");
+
+            //alert(so);
+            document.body.removeChild(t)
+ 
+
+
+
+
+
+
+          ///////////////////
+    })
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
       var mecanico=""
        mecanico=localStorage.getItem("mec");
      
@@ -136,7 +202,7 @@
                     localStorage.setItem("mec",mecanico);
                        }
                 else{
-                    alert("Hi "+mecanico);
+              //      alert("Hi "+mecanico);
 
                 }
     var s = document.getElementsByTagName("style")[0];
@@ -180,8 +246,8 @@
              me.value=mecanico;
              qi.innerHTML=r.qty;
 
-          //   qi.style.width=qi.offsetHeight+"px";
-          //   qi.style.height=qi.style.width;
+             qi.style.width=qi.offsetHeight+"px";
+             qi.style.height=qi.style.width;
    // alert(qi.style.width+"...\n\n..."+qi.style.height)
 
               }
