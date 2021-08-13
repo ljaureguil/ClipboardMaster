@@ -19,10 +19,11 @@
         right:1%;
     }
     button {
-        font-size: 35px;
+        font-size: 30px;
         border-radius: 10px;
         background: rgb(253, 81, 28);
         color: white;
+        margin:20px;
     }
     #reader {
         display:none;
@@ -91,14 +92,15 @@
        width: 50%;
     }
     #tcl{
-        width: 80%;
-        height:35%;
+        width: 90%;
+        height:55%;
+      
     }
 </style>
 <div id="todo">
     <div id="dclip">
-        <button id="bc" onclick="readClipb(true)">Read Clipboard/header</button>
-        <button id="bc" onclick="readClipb(false)">Read Clipboard</button><br><br>
+        <button id="bc" onclick="readClipb(true)">Copy Clipboard/header</button><br>
+        <button id="bc" onclick="readClipb(false)">Copy Clipboard/no header</button><br><br>
 
         <textarea id="tcl"></textarea>
     </div>
@@ -152,10 +154,12 @@ function readClipb(op){
               var b=a[i];
               var fe=b.created.split("GMT")[0];
               var pu="";
-              if(b.move==="return") pu="X";
+              si=1;
+             
+              if(b.move==="return"){ pu="X";si=-1}
            
             
-         s+=b.qty+ String.fromCharCode(9) +b.jobNo+ String.fromCharCode(9) +b.partN+ String.fromCharCode(9) +b.desc+ String.fromCharCode(9) +b.mechanic+ String.fromCharCode(9) +pu+ String.fromCharCode(9) +fe+"\n";
+         s+=b.qty*si+ String.fromCharCode(9) +b.jobNo+ String.fromCharCode(9) +b.partN+ String.fromCharCode(9) +b.desc+ String.fromCharCode(9) +b.mechanic+ String.fromCharCode(9) +pu+ String.fromCharCode(9) +fe+"\n";
 
           }
           if(op) tcl.value=h+s;
