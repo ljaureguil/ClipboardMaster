@@ -25,13 +25,7 @@
         color: white;
         margin:20px;
     }
-    #reader {
-        display:none;
-
-        width: 100%;
-        color: white;
-        font-size: 25px;
-    }
+   
     #ta {
         width: 95%;
         display: none;
@@ -44,23 +38,8 @@
         background-color: rgb(14, 236, 118);
         display: none;
     }
-    #dor{
-        position: relative;
-        text-align: right;
-        padding:15px;
- 
-        width: 80%;
-        left: 10%;
    
-        border-style: solid;
-        background-color: rgb(154, 209, 180);
-        display: none;
-    }
   
-    #de{
-        height: auto;
-
-    }
     #todo{
         text-align: center;
         width: 100%;
@@ -82,10 +61,7 @@
         opacity: .75;
         font-weight: bold;
         padding:15px;
-    //    width:8vw;
-   // height:8vw; /* same as width */
-
-
+   
     }
     #qt{
   
@@ -101,33 +77,19 @@
     <div id="dclip">
         <button id="bc" onclick="readClipb(true)">Copy Clipboard/header</button><br>
         <button id="bc" onclick="readClipb(false)">Copy Clipboard/no header</button><br><br>
-
-        <textarea id="tcl"></textarea>
-    </div>
-
-    <div id="dor"> 
-        <button id="qi" onclick="alert('This is what Inventory has '+this.innerHTML+' Pcs.')"></button> . . . 
-        Qty: <input id="qt" type="number" class="cin"><br><br>
-     Job No. <input id="jn" type="text" class="cin"><br><br>
-
-     Part No. <input id="pno" type="text" class="cin"><br><br>
-     desc: <input id="de" type="text" class="cin"><br><br>
-      Mech <input id="me" type="text" class="cin"><br> <br>  
+        <select id="ops" oninput="readClipb(true, this.value)">Choose Option
  
-     Note <input id="no" type="text" class="cin"><br><br>     
-     <button onclick="dor.style.display='none';send('pull')"   style="background-color: rgb(39, 221, 39);">Send To Clipboard (Pull)</button><br><br>
-     <button onclick="dor.style.display='none';send('return')">Send To Clipboard (Return)</button><br><br>
-     <button onclick="dor.style.display='none'">Close</button>
-       
- </div>
-<br><br>
-<div id="reader"></div>
-<br>
-
-<div id="res">
+            <option>Sort By...</option>
+            <option>Date</option>
+      <option>Mech</option>   
+      <option>Part</option>
+      <option>Job</option>
+       </select><br><br>
   
-    <a id="ta" href="" target="_blank"></a>
-
+        <textarea id="tcl"></textarea>
+ 
+<div id="res">
+ 
     <textarea id="tx"></textarea>
 </div>
  
@@ -143,25 +105,139 @@
      var linkp = 'https://jsonblob.com/api/d0317ef4-f48e-11eb-9b1d-755fd0c1d5cb';
      var linkc = 'https://jsonblob.com/api/0da2d184-f931-11eb-a6a9-8d2736c2c513'
 
-function readClipb(op){
+function readClipb(op,by){
     GetJ(linkc,function(obj){
-//          alert(JSON.stringify(obj.pulls[2]))
+   
           var s="";
           var h='Qty'+ String.fromCharCode(9) +'Job'+ String.fromCharCode(9) +'Part No.'+ String.fromCharCode(9) +'Desc'+ String.fromCharCode(9) +'Mech'+ String.fromCharCode(9) +'Ret'+ String.fromCharCode(9) +'Date\n'
-         
+    
            a=obj.pulls;
+       //    alert(by)
+           if(by===undefined){
           for(var i=0;i<a.length;i++){
               var b=a[i];
-              var fe=b.created.split("GMT")[0];
-              var pu="";
+              var fe=getFe(b.created);
+          
+                var pu="";
               si=1;
-             
-              if(b.move==="return"){ pu="X";si=-1}
+                 if(b.move==="return"){ pu="X";si=-1}
            
             
          s+=b.qty*si+ String.fromCharCode(9) +b.jobNo+ String.fromCharCode(9) +b.partN+ String.fromCharCode(9) +b.desc+ String.fromCharCode(9) +b.mechanic+ String.fromCharCode(9) +pu+ String.fromCharCode(9) +fe+"\n";
 
           }
+        }
+        else{
+            if(by==="Date"){
+                var arf=[];
+               for(var i=0;i<a.length;i++)
+                {
+                       var v=Date.parse(a[i].created);
+               
+                   arf.push(v+"@"+JSON.stringify(a[i]));
+
+                }
+                arf=arf.sort();
+              //  alert(arf);
+                for(var i=0;i<arf.length;i++){
+                    var o=arf[i].split("@")[1];
+                   var b=JSON.parse(o);//alert(o)
+               fe=getFe(b.created)
+                 var pu="";
+                   si=1;
+                 if(b.move==="return"){ pu="X";si=-1} 
+                    s+=b.qty*si+ String.fromCharCode(9) +b.jobNo+ String.fromCharCode(9) +b.partN+ String.fromCharCode(9) +b.desc+ String.fromCharCode(9) +b.mechanic+ String.fromCharCode(9) +pu+ String.fromCharCode(9) +fe+"\n";
+           
+                }
+             
+
+            }
+            if(by==="Mech"){
+  
+                var arf=[];
+               for(var i=0;i<a.length;i++)
+                {
+                    v=a[i].mechanic
+                arf.push(v+"@"+JSON.stringify(a[i]));
+
+                }
+                arf=arf.sort(); 
+                for(var i=0;i<arf.length;i++){
+                    var o=arf[i].split("@")[1];
+                   var b=JSON.parse(o);//alert(o)
+               fe=getFe(b.created)
+                 var pu="";
+                   si=1;
+                 if(b.move==="return"){ pu="X";si=-1} 
+                    s+=b.qty*si+ String.fromCharCode(9) +b.jobNo+ String.fromCharCode(9) +b.partN+ String.fromCharCode(9) +b.desc+ String.fromCharCode(9) +b.mechanic+ String.fromCharCode(9) +pu+ String.fromCharCode(9) +fe+"\n";
+           
+                }
+             
+
+
+
+
+                }
+       
+if(by==="Part"){
+
+    var arf=[];
+               for(var i=0;i<a.length;i++)
+                {
+                    v=a[i].partN
+                arf.push(v+"@"+JSON.stringify(a[i]));
+
+                }
+                arf=arf.sort(); 
+                for(var i=0;i<arf.length;i++){
+                    var o=arf[i].split("@")[1];
+                   var b=JSON.parse(o);//alert(o)
+               fe=getFe(b.created)
+                 var pu="";
+                   si=1;
+                 if(b.move==="return"){ pu="X";si=-1} 
+                    s+=b.qty*si+ String.fromCharCode(9) +b.jobNo+ String.fromCharCode(9) +b.partN+ String.fromCharCode(9) +b.desc+ String.fromCharCode(9) +b.mechanic+ String.fromCharCode(9) +pu+ String.fromCharCode(9) +fe+"\n";
+           
+                }
+             
+
+
+                
+}
+if(by==="Job"){
+    var arf=[];
+               for(var i=0;i<a.length;i++)
+                {
+                    v=a[i].jobNo
+                arf.push(v+"@"+JSON.stringify(a[i]));
+
+                }
+                arf=arf.sort(); 
+                for(var i=0;i<arf.length;i++){
+                    var o=arf[i].split("@")[1];
+                   var b=JSON.parse(o);//alert(o)
+               fe=getFe(b.created)
+                 var pu="";
+                   si=1;
+                 if(b.move==="return"){ pu="X";si=-1} 
+                    s+=b.qty*si+ String.fromCharCode(9) +b.jobNo+ String.fromCharCode(9) +b.partN+ String.fromCharCode(9) +b.desc+ String.fromCharCode(9) +b.mechanic+ String.fromCharCode(9) +pu+ String.fromCharCode(9) +fe+"\n";
+           
+                }
+             
+
+                
+}
+ 
+var arf=[];
+               for(var i=0;i<a.length;i++)
+                {
+                    v=a[i].mechanic
+                arf.push(v+"@"+JSON.stringify(a[i]));
+
+                }
+                arf=arf.sort(); 
+}
+  
           if(op) tcl.value=h+s;
           else tcl.value=s;
 /////////////////////////////
@@ -175,105 +251,21 @@ function readClipb(op){
 
             //alert(so);
             document.body.removeChild(t)
+
  
-
-
-
-
-
-
-          ///////////////////
     })
 }
 
+function getFe(fr){
+
+   // var fe=fr.split("GMT")[0];
+                var f=new Date()
+              var v=Date.parse(fr);
+              f.setTime(v)
+            return f.getMonth()+"-"+f.getDate()+"-"+f.getFullYear();
 
 
-
-
-
-
-
-
-
-
-
-
-      var mecanico=""
-       mecanico=localStorage.getItem("mec");
-     
-                if(mecanico===null || mecanico===""){
-                    mecanico=prompt("Type your Name");
-                    localStorage.setItem("mec",mecanico);
-                       }
-                else{
-              //      alert("Hi "+mecanico);
-
-                }
-    var s = document.getElementsByTagName("style")[0];
-    var html5QrcodeScanner = new Html5QrcodeScanner(
-        "reader", {
-            fps: 10,
-            qrbox: 250
-        });
-    html5QrcodeScanner.render(onScanSuccess, onScanError);
-
-    function onScanSuccess(decodedText, decodedResult) {
-        alert(decodedText);
-        pno.value=""
-        qt.value="";
-        jn.value="";
-        no.value="";
-        me.value="";
-        de.value="";
-     //   da.value="";
-
-
-             de.value="";
-             me.value="";
-        if (decodedText.indexOf("http") > -1){
-             ta.style.display = "block";
-      //  ta.click();
-            ta.href = decodedText;
-        ta.innerHTML = decodedText;  
-    }
-        else ta.style.display = "none";
-        tx.value = decodedText;
-        var d=true;
-        if(d){
-       var pp=tx.value.split(" ");
-          getPart(pp[0],function(r,obj){
-              if(r!=null){
-                tx.style.display="none";
-                dor.style.display="block"   
-             pno.value=r.pn
-             de.value=r.des;
-             me.value=mecanico;
-             qi.innerHTML=r.qty;
-
-             qi.style.width=qi.offsetHeight+"px";
-             qi.style.height=qi.style.width;
-   // alert(qi.style.width+"...\n\n..."+qi.style.height)
-
-              }
-             else{
-               tx.style.display="block";
-                  }
-    
-          });
-        }
-
-
-        document.getElementsByTagName("style")[0].innerHTML = s.innerHTML;
-        var st = document.createElement("style");
-        st.innerHTML = s;
-        document.body.getElementsByTagName("style")[0] = st;
-        }
-
-    function onScanError(errorMessage) {
-        // handle on error condition, with error message
-    }
-
-
+}
     function loadDoc(url, callback) {
         var xhttp = new XMLHttpRequest();
         xhttp.open("GET", url, false);
@@ -281,61 +273,11 @@ function readClipb(op){
         callback(xhttp.responseText);
 
     }
-  //  setupinventario();
-function setupinventario(){
+    function sortBy(v){
 
-    GetJ(linkp,function(obj){
-     
-      for(var i=0;i<obj.parts.length;i++){
-          var s=obj.parts[i].pn;
-    
-          s.replace(/ /g,"_");
 
-      }
-      UpdateJ(linkp,obj,function(){alert("done")})
-
-    })
-}
-
-function getPart(pn,callback){
-  //  alert(pn)
-    GetJ(linkp,function(obj){
-        p=obj.parts;
-        for(var i=0;i<p.length;i++){
-           if(pn===p[i].pn){
-             callback( p[i],obj);
-             return p[i]
-
-            }
-            callback(null,null)
-        
-         //  
-        }
-     
-    })
-
-}
-function send(move){
-   GetJ(linkc,function(obj){
-    var o={}; 
-    o.qty=qt.value*1;
-    o.jobNo=jn.value;
-    o.partN=pno.value;
-    o.desc=de.value;
-    o.mechanic=me.value;
-  //  o.date=da.value;
-    o.nota=no.value;
-    o.move=move;
-    o.created=new Date().toString();
-    obj.pulls.push(o);
+    }
  
-
-    UpdateJ(linkc,obj,function(){alert("Part/s sent to Clipboard...")})
-
-
-   })
-
-}
     function GetJ(url, callback) {
 
 //var url  = "http://localhost:8080/api/v1/users";
